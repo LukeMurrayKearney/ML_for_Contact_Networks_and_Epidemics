@@ -1,0 +1,1 @@
+std::iter::Map<std::iter::Filter<std::slice::Iter<'_, (usize, Vec<usize>)>, {closure@src/connecting_stubs.rs:769:17: 769:25}>, {closure@src/connecting_stubs.rs:770:14: 770:21}>
