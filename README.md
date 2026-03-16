@@ -53,7 +53,7 @@ The `input_data/` directory contains preprocessed contact survey datasets requir
 
 - `input_data/egos/` — ego network representations of survey respondents
 - `input_data/gmm/` — pre-fitted optimal GMM component counts (selected via BIC)
-- `input_data/durations/` — contact duration distributions
+- `input_data/durations/` — contact duration distributions for short contacts
 
 Four datasets are provided, corresponding to different survey waves:
 
@@ -68,7 +68,7 @@ Four datasets are provided, corresponding to different survey waves:
 
 ## Example Usage
 
-A Jupyter notebook is provided demonstrating the full pipeline. The key steps are outlined below.
+A Jupyter notebook is provided demonstrating the full pipeline in "example.ipynb". The key steps are outlined below.
 
 ### 1. Load a Dataset
 
@@ -82,12 +82,12 @@ datas = ['comix3', 'comixa', 'comixb', 'poly']
 data = datas[0]  # choose a dataset
 buckets = np.array([5, 12, 18, 30, 40, 50, 60, 70])  # age brackets
 
-# Load pre-fitted optimal GMM components (selected via BIC)
-with open(f'input_data/gmm/optimal_components_{data}_log_smalldur.json', 'r') as f:
+# Load pre-fitted optimal GMM components (selected via BIC) - log scaled gmm and 0-1 hour contacts squashed to reduce directional inaccuracies in GMM fitting
+with open(f'input_data/gmm/optimal_components_{data}_log_smalldur.json', 'r') as f: 
     tmp = json.load(f)
 optimal_num_components = tmp[data]
 
-# Load ego networks and duration properties
+# Load ego networks and duration properties to expand 0-1hour in simulation
 with open(f'input_data/egos/{data}_dur_small.json', 'r') as f:
     egos = json.load(f)
 props = np.genfromtxt(f'input_data/durations/{data}.csv', delimiter=',')
@@ -104,7 +104,7 @@ egos, contact_matrix = nd.fit_to_data(
 )
 ```
 
-Your CSV should contain one row per contact, with columns for respondent age, contact age, and duration.
+Your CSV should contain one row per contact, with columns for respondent ID, respondent age, contact ID, contact age ("cnt_age_exact" or "cnt_age_min"/"cnt_age_max"), and duration. In line with the syntax presented in [socialcontactdata.org](socialcontactdata.org).
 
 ### 2. Sample a Synthetic Population
 
@@ -143,6 +143,9 @@ output = nd.small_dur_gillesp(
 )
 ```
 
+The output dictionary contains details of the network created (e.g., adjacency matrix, frequency distribution and individual age groups), and the outbreak outputs (SEIR events with time points, generation infected, number of secondary cases and between who each transmission occured)
+
+
 ### 4. Visualise Epidemic Trajectories
 
 ```python
@@ -171,15 +174,19 @@ plt.show()
 ## Repository Structure
 
 ```
-├── src/                  # Rust source code for network construction and simulation
+├── duration+ages/          # Simulation results
+├── experiments/            # Files ran on HPC cluster to collect simulation results
 ├── input_data/
-│   ├── egos/             # Preprocessed ego networks per dataset
-│   ├── gmm/              # Optimal GMM component counts
-│   └── durations/        # Contact duration distributions
-├── nd_python_avon/       # Python interface to the Rust library
-├── requirements.txt      # Python dependencies
-├── Cargo.toml            # Rust dependencies
-└── example_notebook.ipynb
+│   ├── egos/               # Preprocessed ego networks per dataset
+│   ├── gmm/                # Optimal GMM component counts
+│   └── durations/          
+├── output_data/            # figure container and EMD error
+├── src/                    # Rust source code for network construction and simulation
+├── Cargo.toml              # Rust dependencies
+├── Example_Notebook.ipynb  
+├── Figures.ipynb
+├── nd_python_avon.py       # Python interface to the Rust library
+└── requirements.txt        # Python dependencies
 ```
 
 ---
@@ -189,11 +196,7 @@ plt.show()
 If you use this code in your work, please cite:
 
 ```
-@article{murraykearney2026ml,
-  title={A Machine Learning Framework for Constructing Heterogeneous Contact Networks: Implications for Epidemic Modelling},
-  author={Murray-Kearney, Luke and others},
-  year={2026}
-}
+
 ```
 
 ---
