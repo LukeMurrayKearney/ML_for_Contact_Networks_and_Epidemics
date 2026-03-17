@@ -196,7 +196,15 @@ plt.show()
 If you use this code in your work, please cite:
 
 ```
-
+@misc{kearney2026machinelearningframeworkconstructing,
+      title={A Machine Learning Framework for Constructing Heterogeneous Contact Networks: Implications for Epidemic Modelling}, 
+      author={Luke Murray Kearney and Emma L Davis and Matt J Keeling},
+      year={2026},
+      eprint={2603.14034},
+      archivePrefix={arXiv},
+      primaryClass={cs.SI},
+      url={https://arxiv.org/abs/2603.14034}, 
+}
 ```
 
 ---
